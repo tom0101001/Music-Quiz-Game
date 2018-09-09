@@ -1,0 +1,173 @@
+import time
+import random
+lost = False
+score = 0
+
+#functions
+def generaterandomsong():
+    choice = random.choice(open("songlist.txt","r").readlines())
+    while choice == "endoflist":
+        choice = random.choice(open("songlist.txt","r").readlines())
+    
+    artist = choice.split(';')[1]
+    songname = choice.split(';')[0]
+    firstletters = ([x[:1] for x in songname.split()])        
+    return artist,firstletters,songname
+
+#Login
+
+login = False
+
+from tkinter import *
+
+def login():
+    
+    username = usernameinput.get()
+    password = passwordinput.get()
+    print(username,password)
+    for line in open("users.txt","r").readlines(): 
+        login_info = line.split() 
+        if username == login_info[0] and password == login_info[1]:
+            print("successfully signed in")
+            login = True
+            time.sleep(1)
+            root.destroy()
+    if login == False:
+        print("username or password is invalid")
+        
+root = Tk()
+usernameinput = StringVar(root)
+usernameinput.set('')
+passwordinput = StringVar(root)
+passwordinput.set('')
+
+Label1 = Label(root,text = "Username")
+Label2 = Label(root,text = "Password")
+Entry1 = Entry(root,textvariable=usernameinput)
+Entry2 = Entry(root,textvariable=passwordinput)
+Label1.grid(row = 1, column = 0)
+Label2.grid(row = 2, column = 0)
+Entry1.grid(row = 1, column = 1)
+Entry2.grid(row = 2, column = 1)
+button1= Button(root, text="Sign in",command = login)
+button1.grid(row=3)
+username = usernameinput.get()
+root.mainloop()
+
+while login == False:
+    yes = yes
+
+
+
+
+'''
+login = False
+while login == False:
+    username = input("Please enter your username")
+    if username == "test":
+        login = True
+    if username != "test":
+        password = input("Please enter your password")  
+        for line in open("users.txt","r").readlines(): 
+            login_info = line.split() 
+            if username == login_info[0] and password == login_info[1]:
+                print("successfully signed in")
+                login = True
+        if login == False:
+            print("username or password is invalid")
+'''
+
+#quiz rules
+if username != "test":
+    time.sleep(1)
+    print("Welcome to the Music Game Quiz\n")
+    time.sleep(1)
+    print("The game is played as follows:\n\n• A random song name and artist are chosen.\n• The artist and the fi rst letter of each word in the song title are displayed.\n• The user has two chances to guess the name of the song.\n• If the user guesses the answer correctly the fi rst time, they score 3 points. If the user guesses\nthe answer correctly the second time they score 1 point. The game repeats.\n")
+ #   print("The game ends when the player guesses the song name incorrectly the second time.")        
+    time.sleep(1)
+    print("\nanswer all questions in lower case\n")
+    time.sleep(1)
+    nothing = input("\n\n PRESS ENTER TO BEGIN \n")
+
+#main game
+
+while lost == False:
+    chosensong = generaterandomsong()
+    print("Artist: "+str(chosensong[0])+"First letter of each word: "+str(chosensong[1]))   
+    answer = input("what is the name of the song?:")
+    if answer == chosensong[2]:
+        print("correct (+ 3 points)\n")
+        score = score + 3
+        time.sleep(1)
+    else:
+        print("incorrect try again\n")
+        answer = input("what is the name of the song?:")
+        if answer == chosensong[2]:
+            print("correct (+ 1 points)\n")
+            score = score + 1
+            time.sleep(1)
+        else:
+            print("Incorrect! Game over")
+            lost = True
+            time.sleep(1)
+print("Score: ",score)
+time.sleep(1)
+
+#saving score to scoreboard
+
+file = open("scoreboard.txt","r")
+lines = file.readlines()
+file.close()
+file = open("scoreboard.txt","w")
+newscorehigher = False
+for line in lines:
+    info = line.split()
+    if line.find(username) == -1:
+        file.write(line)
+    elif int(info[1]) < score:
+        newscorehigher = True
+        file.write(username+" "+str(score)+"\n")
+    else:
+        file.write(line)
+file.close()
+
+#sorting scoreboard
+file = open("scoreboard.txt","r")
+lines = file.readlines()
+file.close()
+file = open("scoreboard.txt","w")
+count = 0
+countmax = 0
+for line in lines:
+    info = line.split()
+    if line != "endoflist":
+        if int(info[1]) > countmax:
+            countmax = int(info[1]) + 1
+count = countmax
+while count >  0:
+    count = count - 1
+    for line in lines:      
+        if line != "endoflist":
+            info = line.split()
+            if int(info[1]) == int(count):
+                file.write(line)
+file.close()
+
+#displaying leaderboard
+print("\n\n===============================")
+print("==========LEADERBOARD==========")
+print("===============================")
+file = open("scoreboard.txt","r")
+lines = file.readlines()
+count = 0
+place = [" ","1st","2nd","3rd","4th","5th"]
+for line in lines:
+    if count < 5:
+        count = count + 1
+        print("\n\n=====",place[count]," PLACE=====",line)
+
+
+
+
+
+
